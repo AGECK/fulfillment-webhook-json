@@ -1,55 +1,109 @@
-{
-  "fulfillmentText": "This is a text response",
-  "fulfillmentMessages": [
-    {
-      "card": {
-        "title": "card title",
-        "subtitle": "card text",
-        "imageUri": "https://assistant.google.com/static/images/molecule/Molecule-Formation-stop.png",
-        "buttons": [
-          {
-            "text": "button text",
-            "postback": "https://assistant.google.com/"
-          }
-        ]
+"use strict";
+
+const express = require("express");
+const bodyParser = require("body-parser");
+
+const restService = express();
+
+restService.use(
+      bodyParser.urlencoded({
+      	extended: true
+      })
+	);
+
+restService.use(bodyParser.json());
+
+restService.post("/V2test",function(req, res){
+
+var userspeech="";
+switch (req.body.result.parameters.AudioSample.toLowerCase()) {
+
+         case "stop":
+         return res.json({
+                          fulfillmentText: "This is a text response",
+              fulfillmentMessages:[
+              {
+                   text :{
+                      text : [
+                          "This is Baidu"
+                      ]
+                   }
+               }
+              ],
+              source: "webhook-echo-sample",
+                  payload: {
+				    google: {
+				      expectUserResponse: true,
+				      richResponse: {
+				        items: [
+				          {
+				            simpleResponse: {
+				              textToSpeech: "Stop repeat the voice"
+				            }
+				          }
+				        ]
+				      }
+				    }
+				  },
+    outputContexts: [
+      {
+        name: "projects/jituopi-5f232/agent/sessions/ad236f60-2b12-2a60-ccff-b35ca09609f4/contexts/repeatthevoice-followup",
+        lifespanCount: 0
       }
-    }
-  ],
-  "source": "example.com",
-  "payload": {
-    "google": {
-      "expectUserResponse": true,
-      "richResponse": {
-        "items": [
-          {
-            "simpleResponse": {
-              "textToSpeech": "this is a simple response"
-            }
-          }
-        ]
-      }
-    },
-    "facebook": {
-      "text": "Hello, Facebook!"
-    },
-    "slack": {
-      "text": "This is a text response for Slack."
-    }
-  },
-  "outputContexts": [
-    {
-      "name": "projects/${PROJECT_ID}/agent/sessions/${SESSION_ID}/contexts/context name",
-      "lifespanCount": 5,
-      "parameters": {
-        "param": "param value"
-      }
-    }
-  ],
-  "followupEventInput": {
-    "name": "event name",
-    "languageCode": "en-US",
-    "parameters": {
-      "param": "param value"
-    }
-  }
+    ]
+
+         });
+         break;
+         case "play music":
+
+		    return res.json({
+	    fulfillmentText: "This is a text response",
+	    fulfillmentMessages: [
+	      {
+	           text:{
+	           	  text:[
+	                 "This is a song called music"
+	           	  ]
+	           }
+	      }
+	    ],
+	    source: "webhook-echo-sample",
+	    payload: {
+	    google: {
+	    expectUserResponse: true,
+	    richResponse: {
+	      items: [
+	        {
+	          simpleResponse: {
+	            textToSpeech: "<speak><audio src='https://raw.githubusercontent.com/AGECK/test-node/master/public/Cancan.mp3'>your wave file</audio></speak>"
+	          }
+	        }
+	      ]
+	    }
+	  }
+	  },
+	  "outputContexts": [
+	      {
+	        "name": "projects/jituopi-5f232/agent/sessions/ad236f60-2b12-2a60-ccff-b35ca09609f4/contexts/repeatthevoice-followup",
+	        "lifespanCount": 1
+	      }
+	    ]		
+	  });
+
+         break;
+
+
 }
+	  });
+
+
+
+
+
+
+
+
+
+restService.listen(process.env.PORT || 8000,function(){
+	console.log("Server up and listening");
+});
